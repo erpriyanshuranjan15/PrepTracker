@@ -251,17 +251,29 @@ async function handleRequest(req, res) {
 }
 
 // ─── Start server ─────────────────────────────────────────────────
-const PORT = 3000;
-const server = http.createServer((req, res) => {
-  handleRequest(req, res).catch(err => {
-    console.error('Error:', err);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Internal Server Error' }));
-  });
-});
+const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => {
-  console.log(`\n✅ PrepTracker backend running at http://localhost:${PORT}`);
-  console.log('   Pages: /index.html  /notes.html  /goals.html  /companies.html  /skills.html  /resume.html');
-  console.log('   API:   /api/notes   /api/goals   /api/companies   /api/skills\n');
-});
+// For Vercel deployment
+if (process.env.VERCEL) {
+  module.exports = (req, res) => {
+    handleRequest(req, res).catch(err => {
+      console.error('Error:', err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    });
+  };
+} else {
+  // Local development
+  const server = http.createServer((req, res) => {
+    handleRequest(req, res).catch(err => {
+      console.error('Error:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
+    });
+  });
+
+  server.listen(PORT, () => {
+    console.log(`\n✅ PrepTracker backend running at http://localhost:${PORT}`);
+    console.log('   Pages: /index.html  /notes.html  /goals.html  /companies.html  /skills.html  /resume.html');
+    console.log('   API:   /api/notes   /api/goals   /api/companies   /api/skills\n');
+  });
+}
