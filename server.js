@@ -239,7 +239,7 @@ async function handleRequest(req, res) {
   }
 
   // ── Static files ─────────────────────────────────────────────────
-  let filePath = pathname === '/' ? '/Landing.html' : pathname;
+  let filePath = pathname === '/' ? '/index.html' : pathname;
   const fullPath = path.join(__dirname, filePath);
 
   // Security: prevent directory traversal
